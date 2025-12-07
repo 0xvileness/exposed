@@ -18,7 +18,7 @@ def mostrar_banner():
     print(banner)
     
     spaces = 22
-    print(f"{' ' * spaces}{Fore.WHITE}{Style.BRIGHT}By: @Oxycrime\n{Style.RESET_ALL}")
+    print(f"{' ' * spaces}{Fore.WHITE}{Style.BRIGHT}By: @Oxvileness\n{Style.RESET_ALL}")
 
 def consultar_email_breach(email):
     api_url = f'https://api.xposedornot.com/v1/breach-analytics?email={email}'
