@@ -2,7 +2,7 @@ import requests
 import json
 from colorama import init, Fore, Style
 
-# Inicializar colorama
+# Initialize colorama
 init(autoreset=True)
 
 def mostrar_banner():
@@ -30,54 +30,54 @@ def consultar_email_breach(email):
         mostrar_resultados(data)
 
     except requests.exceptions.RequestException as e:
-        print(f"{Fore.RED}✖ Error al conectar con la API: {e}")
+        print(f"{Fore.RED}✖ Error connecting to the API: {e}")
 
 def mostrar_resultados(data):
-    print(f"\n{Fore.CYAN} RESULTADOS DE LA CONSULTA{Style.RESET_ALL}")
+    print(f"\n{Fore.CYAN} QUERY RESULTS{Style.RESET_ALL}")
     
-    # Mostrar resumen de riesgo
+    # Show Risk Summary
     risk_info = data.get("BreachMetrics", {}).get("risk", [{}])[0]
-    print(f"\n{Fore.YELLOW} Nivel de riesgo: {Fore.RED if risk_info.get('risk_label') == 'High' else Fore.YELLOW if risk_info.get('risk_label') == 'Medium' else Fore.GREEN}{risk_info.get('risk_label', 'Desconocido')} ({risk_info.get('risk_score', '?')}/100)")
+    print(f"\n{Fore.YELLOW} Risk level: {Fore.RED if risk_info.get('risk_label') == 'High' else Fore.YELLOW if risk_info.get('risk_label') == 'Medium' else Fore.GREEN}{risk_info.get('risk_label', 'Desconocido')} ({risk_info.get('risk_score', '?')}/100)")
     
-    # Mostrar resumen de brechas
+    # Show Breach Summary
     breaches_summary = data.get("BreachesSummary", {}).get("site", "").split(";")
     if breaches_summary and breaches_summary[0]:
-        print(f"\n{Fore.YELLOW} Brechas encontradas: {Fore.WHITE}{len(breaches_summary)}")
-        print(f"{Fore.YELLOW} Sitios afectados: {Fore.WHITE}{', '.join(breaches_summary)}")
+        print(f"\n{Fore.YELLOW} Breaches Found: {Fore.WHITE}{len(breaches_summary)}")
+        print(f"{Fore.YELLOW} Affected Sites: {Fore.WHITE}{', '.join(breaches_summary)}")
     else:
-        print(f"\n{Fore.GREEN} No se encontraron brechas conocidas para este correo")
+        print(f"\n{Fore.GREEN} No known breaches were found on this email")
     
-    # Mostrar métricas por industria
+    # Show metrics by industry
     industry_metrics = data.get("BreachMetrics", {}).get("industry", [[]])[0]
     if industry_metrics:
-        print(f"\n{Fore.YELLOW} Brechas por industria:")
+        print(f"\n{Fore.YELLOW}  Breaches By Industry:")
         for industry in industry_metrics:
             if isinstance(industry, list) and len(industry) == 2 and industry[1] > 0:
                 print(f"  {Fore.CYAN}{industry[0]}: {Fore.WHITE}{industry[1]} brecha(s)")
     
-    # Mostrar detalles de contraseñas
+    # Show password details
     password_strength = data.get("BreachMetrics", {}).get("passwords_strength", [{}])[0]
     if password_strength:
-        print(f"\n{Fore.YELLOW} Estado de contraseñas expuestas:")
-        print(f"  {Fore.RED}Fáciles de crackear: {password_strength.get('EasyToCrack', 0)}")
-        print(f"  {Fore.YELLOW}Texto plano: {password_strength.get('PlainText', 0)}")
-        print(f"  {Fore.GREEN}Hash fuerte: {password_strength.get('StrongHash', 0)}")
-        print(f"  {Fore.BLUE}Desconocido: {password_strength.get('Unknown', 0)}")
+        print(f"\n{Fore.YELLOW} Status Of Exposed Passwords:")
+        print(f"  {Fore.RED}Easy to crack: {password_strength.get('EasyToCrack', 0)}")
+        print(f"  {Fore.YELLOW}Plain text: {password_strength.get('PlainText', 0)}")
+        print(f"  {Fore.GREEN}Hash strong: {password_strength.get('StrongHash', 0)}")
+        print(f"  {Fore.BLUE}Unknown: {password_strength.get('Unknown', 0)}")
     
-    # Mostrar detalles de brechas
+    # Show Breach Details
     exposed_breaches = data.get("ExposedBreaches", {}).get("breaches_details", [])
     if exposed_breaches:
-        print(f"\n{Fore.YELLOW} DETALLES DE LAS BRECHAS:{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW} BREACH DETAILS:{Style.RESET_ALL}")
         for breach in exposed_breaches:
             print(f"\n{Fore.MAGENTA}➤ {breach.get('breach', 'Desconocido')} ({breach.get('industry', '?')})")
-            print(f"  {Fore.CYAN} Año: {breach.get('xposed_date', '?')}")
-            print(f"  {Fore.CYAN} Registros afectados: {breach.get('xposed_records', '?')}")
-            print(f"  {Fore.CYAN} Datos expuestos: {breach.get('xposed_data', '?')}")
-            print(f"  {Fore.CYAN} Referencia: {breach.get('references', '?')}")
-            print(f"  {Fore.CYAN} Detalles: {breach.get('details', '?')[:1000]}...")
+            print(f"  {Fore.CYAN} Year: {breach.get('xposed_date', '?')}")
+            print(f"  {Fore.CYAN} Records Affected: {breach.get('xposed_records', '?')}")
+            print(f"  {Fore.CYAN} Data Exposed: {breach.get('xposed_data', '?')}")
+            print(f"  {Fore.CYAN} Reference: {breach.get('references', '?')}")
+            print(f"  {Fore.CYAN} Details: {breach.get('details', '?')[:1000]}...")
 
 if __name__ == "__main__":
     mostrar_banner()
-    print(f"{Fore.CYAN} Verificación de brechas de seguridad por email")
-    email = input(f"{Fore.WHITE}Ingrese su dirección de correo electrónico: ")
+    print(f"{Fore.CYAN} Email security breach verification")
+    email = input(f"{Fore.WHITE}Enter your Email Address: ")
     consultar_email_breach(email)
